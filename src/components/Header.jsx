@@ -1,4 +1,3 @@
-import React from "react";
 import bookLogo from "../assets/bookLogo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -6,9 +5,30 @@ import {
   faInstagram,
   faXTwitter,
 } from "@fortawesome/free-brands-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { Dropdown } from "flowbite-react";
+import { authContext } from "../context/authCotext";
 
 const Header = () => {
+  const { token, removeToken } = useContext(authContext);
+
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // let token = localStorage.getItem("token");
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const onClickLogout = () => {
+    // localStorage.clear();
+    removeToken();
+    navigate("/login");
+  };
+
   return (
     <>
       <header>
@@ -30,9 +50,42 @@ const Header = () => {
               icon={faXTwitter}
               className="text-2xl hover:scale-110"
             />
-            <button className="border rounded-3xl font-bold hover:bg-black hover:text-white px-3 py-1 ms-3">
-              <Link to={"/login"}>Login</Link>
-            </button>
+            {isLoggedIn ? (
+              <>
+                <Dropdown
+                  label={
+                    <div>
+                      <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
+                        alt=""
+                        className="h-9 w-9 rounded-full"
+                      />
+                    </div>
+                  }
+                  dismissOnClick={false}
+                  className=" text-black  "
+                >
+                  <div className="text-center w-25">
+                    <Link to={"/profile"}>Profile</Link>
+                  </div>
+                  <div
+                    className="text-center cursor-pointer"
+                    onClick={onClickLogout}
+                  >
+                    Logout
+                  </div>
+                </Dropdown>
+              </>
+            ) : (
+              <>
+                <Link
+                  to={"/login"}
+                  className="border rounded-3xl font-bold hover:bg-black hover:text-white px-3 py-1 ms-3"
+                >
+                  Login
+                </Link>
+              </>
+            )}
           </div>
         </div>
         <nav>
@@ -44,7 +97,7 @@ const Header = () => {
               <Link to={"/books"}>Books</Link>
             </li>
             <li className="font-semibold hover:scale-110 hover:text-white">
-              <Link to={"/books"}>Careers</Link>
+              <Link to={"/careers"}>Careers</Link>
             </li>
             <li className="font-semibold hover:scale-110 hover:text-white">
               <Link to={"/contact"}>Contact</Link>

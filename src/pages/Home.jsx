@@ -1,8 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { toast } from "react-toastify";
+import { getLimitedBook } from "../services/allAPI";
 
 const Home = () => {
+  const [bookData, setBookData] = useState([]);
+  useEffect(() => {
+    getBookData();
+  }, []);
+
+  const getBookData = async () => {
+    try {
+      let apiResponse = await getLimitedBook();
+      // console.log(apiResponse);
+      if (apiResponse.status == 200) {
+        setBookData(apiResponse.data.sampleBookData);
+      } else {
+        setBookData(apiResponse.response.data.response);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong while book data");
+    }
+  };
+
   return (
     <>
       <Header />
@@ -28,66 +50,34 @@ const Home = () => {
           </h3>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-6 lg:px-24">
-          <div className="rounded-2xl bg-white p-4 shadow-xl border border-slate-200 flex flex-col items-center hover:shadow-2xl transition-shadow">
-            <img
-              src="https://images.pexels.com/photos/904620/pexels-photo-904620.jpeg"
-              alt="book"
-              className="w-48 h-64 object-cover rounded-md shadow"
-            />
-            <div className="mt-4 text-center">
-              <h3 className="text-blue-600 font-semibold  w-40">
-                Author Name...
-              </h3>
-              <p className="text-gray-700 w-40 mt-1">Book Title...</p>
-              <p className="text-black font-semibold mt-3">$ 23</p>
-            </div>
-          </div>
-          <div className="rounded-2xl bg-white p-4 shadow-xl border border-slate-200 flex flex-col items-center hover:shadow-2xl transition-shadow">
-            <img
-              src="https://images.pexels.com/photos/904620/pexels-photo-904620.jpeg"
-              alt="book"
-              className="w-48 h-64 object-cover rounded-md shadow"
-            />
-            <div className="mt-4 text-center">
-              <h3 className="text-blue-600 font-semibold  w-40">
-                Author Name...
-              </h3>
-              <p className="text-gray-700 w-40 mt-1">Book Title...</p>
-              <p className="text-black font-semibold mt-3">$ 23</p>
-            </div>
-          </div>
-          <div className="rounded-2xl bg-white p-4 shadow-xl border border-slate-200 flex flex-col items-center hover:shadow-2xl transition-shadow">
-            <img
-              src="https://images.pexels.com/photos/904620/pexels-photo-904620.jpeg"
-              alt="book"
-              className="w-48 h-64 object-cover rounded-md shadow"
-            />
-            <div className="mt-4 text-center">
-              <h3 className="text-blue-600 font-semibold  w-40">
-                Author Name...
-              </h3>
-              <p className="text-gray-700 w-40 mt-1">Book Title...</p>
-              <p className="text-black font-semibold mt-3">$ 23</p>
-            </div>
-          </div>
-          <div className="rounded-2xl bg-white p-4 shadow-xl border border-slate-200 flex flex-col items-center hover:shadow-2xl transition-shadow">
-            <img
-              src="https://images.pexels.com/photos/904620/pexels-photo-904620.jpeg"
-              alt="book"
-              className="w-48 h-64 object-cover rounded-md shadow"
-            />
-            <div className="mt-4 text-center">
-              <h3 className="text-blue-600 font-semibold  w-40">
-                Author Name...
-              </h3>
-              <p className="text-gray-700 w-40 mt-1">Book Title...</p>
-              <p className="text-black font-semibold mt-3">$ 23</p>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-6 lg:px-24 text-center">
+          {bookData?.map((eachBook, index) => (
+            <>
+              <div
+                key={index}
+                className="rounded-2xl bg-white p-4 shadow-xl border border-slate-200 flex flex-col items-center hover:shadow-2xl transition-shadow"
+              >
+                <img
+                  src={eachBook.imgURL}
+                  alt={eachBook.title}
+                  className="w-48 h-64 object-cover rounded-md shadow"
+                />
+                <div className="mt-4 text-center">
+                  <h3 className="font-bold  w-40">
+                    {eachBook.title}
+                  </h3>
+                  <p className="text-gray-700 w-40 mt-1">{eachBook.author}</p>
+                  <p className="text-black font-semibold mt-3">
+                    Rs {eachBook.price}
+                  </p>
+                </div>
+              </div>
+            </>
+          ))}
         </div>
+
         <div className="text-center m-10">
-          <button class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold rounded-lg">
+          <button className="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold rounded-lg">
             Explore More
           </button>
         </div>
@@ -137,7 +127,7 @@ const Home = () => {
           <img
             src="https://images.pexels.com/photos/6980996/pexels-photo-6980996.jpeg"
             alt=""
-            className="h-44 w-44 object-cover   rounded-full"
+            className="h-44 w-44 object-cover  rounded-full"
           />
         </div>
         <h5 className="text-center m-3 font-semibold">Treesa Joseph</h5>
@@ -151,7 +141,7 @@ const Home = () => {
           voluptatum unde animi nemo aperiam quos!
         </p>
       </section>
-      <Footer/>
+      <Footer />
     </>
   );
 };
